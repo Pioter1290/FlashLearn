@@ -1,0 +1,17 @@
+.top {
+    width: 100%; 
+    background-color: rgba(47, 119, 201, 0.942); 
+    border: 2px solid rgba(255, 255, 255, .2); 
+    box-shadow: 0 0 50px rgba(0, 0, 0, .4);
+    color: #fff; 
+    padding: 5px 0px; 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    z-index: 1000; 
+}
+
+.top h1 {
+    font-size: 30px; 
+    text-align: center; 
+}
