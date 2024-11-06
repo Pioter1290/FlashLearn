@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoHome } from "react-icons/io5";
 import { FaEdit } from "react-icons/fa";
@@ -16,26 +16,40 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [showAboutModal, setShowAboutModal] = useState(false);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showContactModal, setShowContactModal] = useState(false);
     const [folderName, setFolderName] = useState('');
-    const [folderColor, setFolderColor] = useState('#ffffff'); 
+    const [folderColor, setFolderColor] = useState('#ffffff');
     const [folders, setFolders] = useState([]);
-    const [selectedColor, setSelectedColor] = useState(''); 
+    const [selectedColor, setSelectedColor] = useState('');
+    const [selectedFolder, setSelectedFolder] = useState(null);
 
-    const colors = ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#FF33A1', '#FF8C33']; 
+    const colors = ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#FF33A1', '#FF8C33'];
+
+    const navigate = useNavigate(); 
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
     };
 
+    const handleLogout = (event) => {
+        event.preventDefault(); 
+        navigate('/'); 
+    };
+
     const toggleModal = (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
         setShowModal(!showModal);
     };
 
     const toggleAboutModal = (e) => {
         e.preventDefault();
         setShowAboutModal(!showAboutModal);
+    };
+
+    const toggleLogoutModal = (e) => {
+        e.preventDefault();
+        setShowLogoutModal(!showLogoutModal);
     };
 
     const toggleContactModal = (e) => {
@@ -48,24 +62,55 @@ const Navbar = () => {
     };
 
     const handleFolderColorChange = (color) => {
-        setSelectedColor(color); 
-        setFolderColor(color); 
+        setSelectedColor(color);
+        setFolderColor(color);
     };
 
-    const handleAddFolder = () => {
+    const handleAddFolder = async () => {
         if (folderName.trim()) {
-            setFolders([...folders, { name: folderName, color: folderColor }]); 
+            const newFolder = { name: folderName, color: folderColor };
+            
+            try {
+                const response = await fetch('http://localhost:8081/add-folder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newFolder),
+                });
+    
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Folder added:", data);
+                    
+                    setFolders([...folders, { ...newFolder, id: data.folderId }]); 
+                } else {
+                    console.error("Failed to add folder:", response.statusText);
+                }
+            } catch (error) {
+                console.error("Error adding folder:", error);
+            }
+    
             setShowModal(false);
             setFolderName('');
-            setFolderColor('#ffffff'); 
-            setSelectedColor(''); 
+            setFolderColor('#ffffff');
+            setSelectedColor('');
         }
     };
+    
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleAddFolder();
         }
+    };
+
+    const openFolderModal = (folder) => {
+        setSelectedFolder(folder); 
+    };
+
+    const closeFolderModal = () => {
+        setSelectedFolder(null); 
     };
 
     return (
@@ -104,7 +149,7 @@ const Navbar = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link to="/" className="link">
+                        <Link to="#" onClick={toggleLogoutModal} className="link">
                             <div className="icon"><FiLogOut /></div>
                             <div className="text">Log-out</div>
                         </Link>
@@ -134,11 +179,11 @@ const Navbar = () => {
                             ))}
                         </div>
                         <div className="button-container">
-                            <button onClick={toggleModal}>
+                            <button type="button" onClick={toggleModal}>
                                 Close
-                                <IoCloseCircle className='newicons'/>
+                                <IoCloseCircle className='newicons' />
                             </button>
-                            <button onClick={handleAddFolder}>
+                            <button type="button" onClick={handleAddFolder}>
                                 Add
                                 <IoMdAddCircle className='newicons' />
                             </button>
@@ -153,41 +198,74 @@ const Navbar = () => {
                         <h2>About This Application</h2>
                         <p>FlashLearn is an application that allows you to quickly learn using flashcards.</p>
                         <div className="closebutton">
-                            <button onClick={toggleAboutModal}>
+                            <button type="button" onClick={toggleAboutModal}>
                                 Close
-                                <IoCloseCircle className='newicons'/>
+                                <IoCloseCircle className='newicons' />
                             </button>
                         </div>
                     </div>
                 </div>
             )}
+
             {showContactModal && (
                 <div className="modal-overlay" onClick={toggleContactModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <h2>Contact</h2>
                         <p>aaaa@gmail.com</p>
                         <div className="closebutton">
-                            <button onClick={toggleContactModal}>
+                            <button type="button" onClick={toggleContactModal}>
                                 Close
-                                <IoCloseCircle className='newicons'/>
+                                <IoCloseCircle className='newicons' />
                             </button>
                         </div>
                     </div>
                 </div>
             )}
-            {folders.length > 0 && (
-    <div className="new-folder">
-        {folders.map((folder, index) => (
-            <div
-                key={index}
-                className="folder"
-                style={{ backgroundColor: folder.color }}
-            >
-                <h1>{folder.name}</h1>
+
+            {showLogoutModal && (
+                <div className="modal-overlay" onClick={toggleLogoutModal}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h2>Log-out</h2>
+                        <p>Are you sure you want to log out?</p>
+                        <div className="button-container">
+                            <button type="button" onClick={toggleLogoutModal}>
+                                No
+                            </button>
+                            <form onSubmit={handleLogout}>
+                                <button type="submit">
+                                    Yes
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div>
+                {folders.length > 0 && (
+                    <div className="folder-tab">
+                        {folders.map((folder, index) => (
+                            <div key={index} className="new-folder" onClick={() => openFolderModal(folder)}>
+                                <div className="small-rectangle" style={{ backgroundColor: folder.color }}></div>
+                                <h2>{folder.name}</h2>
+                            </div>
+                        ))}
+                    </div>
+                )}
+                {selectedFolder && (
+                    <div className="modal-overlay" onClick={closeFolderModal}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <h2>{selectedFolder.name}</h2>
+                            <p>Color: {selectedFolder.color}</p>
+                            <div className="button-container">
+                                <button type="button" onClick={closeFolderModal}>
+                                    Close <IoCloseCircle className='newicons' />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
-        ))}
-    </div>
-)}
         </div>
     );
 };

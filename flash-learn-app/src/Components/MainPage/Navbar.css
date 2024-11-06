@@ -246,40 +246,60 @@
     box-shadow: 0 0 10px rgba(13, 13, 14, 0.5); 
 }   
 .folder-tab {
-    width: 120px;
-    height: 30px; 
-    border-radius: 10px 10px 0 0;
-    position: relative;
-    top: -15px; 
-    left: 20px; 
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 80px 0px 10px 180px;
 }
+
 .new-folder {
-    margin-top: 20px;
     width: 300px;
     height: 200px;
-    background-color: #e9e8e8;
+    background-color: #ffffff; 
     border: 1px solid #ddd;
     border-radius: 10px;
     box-sizing: border-box;
     text-align: center;
-    box-shadow: 0 0 20px rgba(0, 0, 0, .6); 
+    box-shadow: 0 0 20px rgba(0, 0, 0, .6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    flex-direction: column;
+    padding-top: 20px;
+    margin: 10px; 
+    font-size: 30px;
+    color: #ffffff; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap;
 }
 
-.new-folder:hover{
+
+.small-rectangle {
+    height: 40px;
+    position: absolute;
+    top: 0px; 
+    width: 100%;
+    border-radius: 10px 10px 0 0;
+}
+
+.new-folder h2 {
+    top: 0px;
+    text-shadow: 
+        -1px -1px 0 black,  
+        1px -1px 0 black,  
+        -1px 1px 0 black,   
+        1px 1px 0 black;    
+    color: #ffffff; 
+    text-transform: uppercase;
+}
+
+.new-folder:hover {
     box-shadow: 0 0 20px rgba(0, 0, 0, .9);
     transform: scale(1.01);
 }
 
-.new-folder .folder {
-    width: 100%;
-    border-top-left-radius: 10px;  
-    border-top-right-radius: 10px;
-    color:#fff;
-    text-shadow: 
-        -1px -1px 0 black, 
-        1px -1px 0 black,   
-        -1px 1px 0 black,  
-        1px 1px 0 black; 
-}
+
+
 

@@ -1,10 +1,7 @@
 
-import { FaRegUserCircle } from "react-icons/fa";
-import { RiLockPasswordLine } from "react-icons/ri";
-import { Link, useNavigate } from 'react-router-dom'; 
 import './MainPage.css';
 import Navbar from "./Navbar";
-
+import React from 'react';
 const MainPage = () => {
     return (
       <><div className="top">
