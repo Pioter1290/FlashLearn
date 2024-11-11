@@ -29,7 +29,7 @@ app.listen(8081, () => {
 
 app.post('/signup', (req, res) => {
   console.log("Received signup request:", req.body); 
-  const sql = "INSERT INTO login (`name`, `email`, `password`) VALUES (?)";
+  const sql = "INSERT INTO login (name, email, password) VALUES (?)";
   const values = [
     req.body.name,
     req.body.email,
@@ -47,7 +47,7 @@ app.post('/signup', (req, res) => {
 
 app.post('/login', (req, res) => {
   console.log("Received login request:", req.body); 
-  const sql = "SELECT * FROM login WHERE `email` = ? AND `password` = ?";
+  const sql = "SELECT * FROM login WHERE email = ? AND password = ?";
   
   db.query(sql, [req.body.email, req.body.password], (err, data) => {
     if (err) {
@@ -72,7 +72,7 @@ app.post('/add-folder', (req, res) => {
     return res.status(403).json({ error: "User not authenticated" });
   }
 
-  const sql = "INSERT INTO app_folders (`folder_name`, `folder_color`, `user_id`) VALUES (?)"; 
+  const sql = "INSERT INTO app_folders (folder_name, folder_color, user_id) VALUES (?)"; 
   const values = [name, color, userId]; 
 
   db.query(sql, [values], (err, result) => {
@@ -90,21 +90,84 @@ app.post('/logout', (req, res) => {
 });
 
 app.get('/folders', (req, res) => {
-    const userId = req.headers['userid']; 
+  if (!userId) {
+    return res.status(403).json({ error: "User not authenticated" });
+  }
 
-    if (!userId) {
-        return res.status(403).json({ error: "User not authenticated" });
+  const sql = "SELECT * FROM app_folders WHERE user_id = ?";
+  
+  db.query(sql, [userId], (err, data) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).json({ error: "Database error" });
     }
-
-    const sql = "SELECT * FROM app_folders WHERE user_id = ?";
-    
-    db.query(sql, [userId], (err, data) => {
-        if (err) {
-            console.error("Error executing query:", err);
-            return res.status(500).json({ error: "Database error" });
-        }
-        res.json(data); 
-    });
+    res.json(data); 
+  });
 });
 
 
+app.post('/add-flashcard', (req, res) => {
+  console.log("Received add-flashcard request:", req.body); 
+  const { question, answer, folder_id } = req.body;
+
+  if (!question || !answer || !folder_id) {
+    return res.status(400).json({ error: "Question, answer, and folder_id are required" });
+  }
+
+  const sql = "INSERT INTO flashcards (flashcard_question, flashcard_answer, folder_id) VALUES (?)";
+  const values = [question, answer, folder_id];
+  
+  db.query(sql, [values], (err, data) => {
+    if (err) {
+      console.error("Error executing query:", err); 
+      return res.status(500).json({ error: "Database error" });
+    } 
+    res.status(201).json({ message: "Flashcard added successfully", flashcardId: data.insertId });
+    
+  });
+});
+
+app.delete('/delete-flashcard/:id', (req, res) => {
+  const flashcardId = req.params.id;
+
+  console.log("Received delete-flashcard request:", flashcardId);
+
+  if (!flashcardId) {
+    return res.status(400).json({ error: "Flashcard ID is required" });
+  }
+
+  const sql = "DELETE FROM flashcards WHERE flashcard_id = ?";
+  const values = [flashcardId];
+
+  db.query(sql, values, (err, data) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    if (data.affectedRows === 0) {
+      return res.status(404).json({ error: "Flashcard not found" });
+    }
+
+    res.status(200).json({ message: "Flashcard deleted successfully" });
+  });
+});
+
+app.get('/flashcards', (req, res) => {
+  const folderId = req.query.folder_id; 
+  console.log("Received request for folder_id:", folderId); 
+
+  if (!folderId) {
+    return res.status(400).json({ error: "Folder ID is required" });
+  }
+
+  const sql = "SELECT * FROM flashcards WHERE folder_id = ?";
+  
+  db.query(sql, [folderId], (err, data) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json(data); 
+  });
+});

@@ -26,10 +26,10 @@ const LoginForm = () => {
     setErrors(Validation(values));
     if (errors.email === "" && errors.password === "") {
         axios.post('http://localhost:8081/login', values)
-            .then(res => {
-                if(res.data.message === "Success"){
-                    localStorage.setItem('userId', res.data.userId); 
-                    fetchFolders(res.data.userId); 
+            .then(async (res) => {
+                if (res.data.message === "Success") {
+                    localStorage.setItem('userId', res.data.userId);
+                    const folders = await fetchFolders(res.data.userId); 
                     navigate('/page');
                 } else {
                     alert(res.data.message);
@@ -39,20 +39,23 @@ const LoginForm = () => {
     }
 };
 
-const fetchFolders = (userId) => {
-    axios.get('http://localhost:8081/folders', {
-        headers: {
-            'userId': userId 
-        }
-    })
-    .then(res => {
-        if (res.status === 200) {
-            console.log("User folders:", res.data); 
-            localStorage.setItem('folders', JSON.stringify(res.data)); 
-        }
-    })
-    .catch(err => console.log(err));
+
+const fetchFolders = async (userId) => {
+  try {
+      const res = await axios.get('http://localhost:8081/folders', {
+          headers: { 'userId': userId }
+      });
+
+      if (res.status === 200) {
+          localStorage.setItem('folders', JSON.stringify(res.data));  
+          return res.data;
+      }
+  } catch (err) {
+      console.log("Error fetching folders:", err);
+      return []; 
+  }
 };
+
 
   return (
     <div className="wrapper">

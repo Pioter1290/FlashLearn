@@ -9,13 +9,14 @@ import { FiLogOut } from "react-icons/fi";
 import { FaFolderPlus } from "react-icons/fa6";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoCloseCircle } from "react-icons/io5";
-
+import { MdNavigateNext } from "react-icons/md";
 import './Navbar.css';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [showAboutModal, setShowAboutModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showContactModal, setShowContactModal] = useState(false);
     const [folderName, setFolderName] = useState('');
@@ -27,6 +28,26 @@ const Navbar = () => {
     const colors = ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#FF33A1', '#FF8C33'];
 
     const navigate = useNavigate(); 
+
+    useEffect(() => {
+        initializeFolders();
+    }, []);
+    
+    const initializeFolders = () => {
+        const storedFolders = JSON.parse(localStorage.getItem('folders'));
+        if (storedFolders) {
+            const formattedFolders = storedFolders.map(folder => ({
+                id: folder.folder_id,
+                name: folder.folder_name,
+                color: folder.folder_color
+            }));
+            setFolders(formattedFolders);
+        }
+    };
+    const handleContinue = () => {
+        closeFolderModal();
+        navigate(`/flashcards`);
+    };
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
@@ -50,6 +71,11 @@ const Navbar = () => {
     const toggleLogoutModal = (e) => {
         e.preventDefault();
         setShowLogoutModal(!showLogoutModal);
+    };
+
+    const toggleEditModal = (e) => {
+        e.preventDefault();
+        setShowEditModal(!showEditModal);
     };
 
     const toggleContactModal = (e) => {
@@ -81,7 +107,7 @@ const Navbar = () => {
     
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Folder added:", data);
+                    
                     
                     setFolders([...folders, { ...newFolder, id: data.folderId }]); 
                 } else {
@@ -97,7 +123,6 @@ const Navbar = () => {
             setSelectedColor('');
         }
     };
-    
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
@@ -106,6 +131,8 @@ const Navbar = () => {
     };
 
     const openFolderModal = (folder) => {
+        console.log(`Folder ID: ${folder.id}`);
+        localStorage.setItem('folder-id', folder.id.toString());
         setSelectedFolder(folder); 
     };
 
@@ -131,7 +158,7 @@ const Navbar = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link to="/editfolder" className="link">
+                        <Link to="#" onClick = {toggleEditModal} className="link">
                             <div className="icon"><FaEdit /></div>
                             <div className="text">Edit Folder</div>
                         </Link>
@@ -222,6 +249,21 @@ const Navbar = () => {
                 </div>
             )}
 
+            {showEditModal && (
+                <div className="modal-overlay" onClick={toggleEditModal}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h2>Edit Folder</h2>
+                        
+                        <div className="closebutton">
+                            <button type="button" onClick={toggleEditModal}>
+                                Close
+                                <IoCloseCircle className='newicons' />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}  
+
             {showLogoutModal && (
                 <div className="modal-overlay" onClick={toggleLogoutModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -255,11 +297,15 @@ const Navbar = () => {
                 {selectedFolder && (
                     <div className="modal-overlay" onClick={closeFolderModal}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <h2>{selectedFolder.name}</h2>
-                            <p>Color: {selectedFolder.color}</p>
+                            <h2>{selectedFolder.name.toUpperCase()}</h2>
+                            
+                            <p>Do you want to go to the folder with the given name?</p>
                             <div className="button-container">
                                 <button type="button" onClick={closeFolderModal}>
                                     Close <IoCloseCircle className='newicons' />
+                                </button>
+                                <button type="button" onClick={handleContinue}>
+                                    Continue <MdNavigateNext className='newicons' />
                                 </button>
                             </div>
                         </div>
