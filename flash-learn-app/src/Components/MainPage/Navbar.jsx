@@ -10,12 +10,14 @@ import { FaFolderPlus } from "react-icons/fa6";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoCloseCircle } from "react-icons/io5";
 import { MdNavigateNext } from "react-icons/md";
+import { AiFillDelete } from "react-icons/ai";
+
 import './Navbar.css';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    const [showAboutModal, setShowAboutModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showContactModal, setShowContactModal] = useState(false);
@@ -24,15 +26,19 @@ const Navbar = () => {
     const [folders, setFolders] = useState([]);
     const [selectedColor, setSelectedColor] = useState('');
     const [selectedFolder, setSelectedFolder] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [folderToEdit, setFolderToEdit] = useState(null);
+    const [folderToDelete, setFolderToDelete] = useState(null);
 
     const colors = ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#FF33A1', '#FF8C33'];
 
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     useEffect(() => {
         initializeFolders();
     }, []);
-    
+
     const initializeFolders = () => {
         const storedFolders = JSON.parse(localStorage.getItem('folders'));
         if (storedFolders) {
@@ -44,6 +50,7 @@ const Navbar = () => {
             setFolders(formattedFolders);
         }
     };
+    
     const handleContinue = () => {
         closeFolderModal();
         navigate(`/flashcards`);
@@ -54,8 +61,8 @@ const Navbar = () => {
     };
 
     const handleLogout = (event) => {
-        event.preventDefault(); 
-        navigate('/'); 
+        event.preventDefault();
+        navigate('/');
     };
 
     const toggleModal = (e) => {
@@ -63,9 +70,9 @@ const Navbar = () => {
         setShowModal(!showModal);
     };
 
-    const toggleAboutModal = (e) => {
+    const toggleDeleteModal = (e) => {
         e.preventDefault();
-        setShowAboutModal(!showAboutModal);
+        setShowDeleteModal(!showDeleteModal);
     };
 
     const toggleLogoutModal = (e) => {
@@ -92,6 +99,16 @@ const Navbar = () => {
         setFolderColor(color);
     };
 
+    const selectFolderToEdit = (folder) => {
+        setFolderToEdit(folder);
+        setIsEditing(true);
+    };
+
+    const selectFolderToDelete = (folder) => {
+        setFolderToDelete(folder);
+        setIsDeleting(true);
+    };
+
     const handleAddFolder = async () => {
         if (folderName.trim()) {
             const newFolder = { name: folderName, color: folderColor };
@@ -107,9 +124,7 @@ const Navbar = () => {
     
                 if (response.ok) {
                     const data = await response.json();
-                    
-                    
-                    setFolders([...folders, { ...newFolder, id: data.folderId }]); 
+                    setFolders([...folders, { ...newFolder, id: data.folderId }]);
                 } else {
                     console.error("Failed to add folder:", response.statusText);
                 }
@@ -124,6 +139,27 @@ const Navbar = () => {
         }
     };
 
+    const handleDeleteFolder = async () => {
+        if (!folderToDelete) return;
+    
+        try {
+            const response = await fetch(`http://localhost:8081/delete-folder/${folderToDelete.id}`, {
+                method: 'DELETE',
+            });
+    
+            if (response.ok) {
+                setFolders(folders.filter(folder => folder.id !== folderToDelete.id));
+                setFolderToDelete(null);
+                setShowDeleteModal(false); 
+            } else {
+                console.error("Failed to delete folder:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Error deleting folder:", error);
+        }
+    };
+    
+
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleAddFolder();
@@ -133,11 +169,11 @@ const Navbar = () => {
     const openFolderModal = (folder) => {
         console.log(`Folder ID: ${folder.id}`);
         localStorage.setItem('folder-id', folder.id.toString());
-        setSelectedFolder(folder); 
+        setSelectedFolder(folder);
     };
 
     const closeFolderModal = () => {
-        setSelectedFolder(null); 
+        setSelectedFolder(null);
     };
 
     return (
@@ -154,19 +190,19 @@ const Navbar = () => {
                     <li>
                         <Link to="#" onClick={toggleModal} className="link">
                             <div className="icon"><FaFolderPlus /></div>
-                            <div className="text">New Folder</div>
+                            <div className="text">Add Folder</div>
                         </Link>
                     </li>
                     <li>
-                        <Link to="#" onClick = {toggleEditModal} className="link">
+                        <Link to="#" onClick={toggleEditModal} className="link">
                             <div className="icon"><FaEdit /></div>
                             <div className="text">Edit Folder</div>
                         </Link>
                     </li>
                     <li>
-                        <Link to="#" onClick={toggleAboutModal} className="link">
-                            <div className="icon"><FaInfoCircle /></div>
-                            <div className="text">About</div>
+                        <Link to="#" onClick={toggleDeleteModal} className="link">
+                            <div className="icon"><AiFillDelete /></div>
+                            <div className="text">Delete Folder</div>
                         </Link>
                     </li>
                     <li>
@@ -219,15 +255,57 @@ const Navbar = () => {
                 </div>
             )}
 
-            {showAboutModal && (
-                <div className="modal-overlay" onClick={toggleAboutModal}>
+            {showDeleteModal && (
+                <div className="modal-overlay" onClick={toggleDeleteModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <h2>About This Application</h2>
-                        <p>FlashLearn is an application that allows you to quickly learn using flashcards.</p>
+                    <h2>Delete Folder</h2>
+                    <p>Select Folder you want to delete</p>
+                        <div className="table-container">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {folders.length > 0 ? (
+                                    folders.map(folder => (
+                                    <tr key={folder.id}>
+                                        <td>{folder.name}</td>
+                                        <td>
+                                            <button className='select-button' onClick={() => selectFolderToDelete(folder)}>
+                                                Select
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                    <td colSpan="2">No folders available</td>
+                                    </tr>
+                                )}
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                        {folderToDelete && (
+                            <div className="confirmation-container">
+                                <p>Are you sure you want to delete this folder?</p>
+                                <div className="button-container">
+                                    <button type="button" onClick={() => { setIsDeleting(false); setFolderToDelete(null); }}>
+                                        No
+                                    </button>
+                                    <button type="button" onClick={handleDeleteFolder}>
+                                        Yes
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                         <div className="closebutton">
-                            <button type="button" onClick={toggleAboutModal}>
+                            <button type="button" onClick={toggleDeleteModal}>
                                 Close
-                                <IoCloseCircle className='newicons' />
+                            
                             </button>
                         </div>
                     </div>
@@ -242,7 +320,7 @@ const Navbar = () => {
                         <div className="closebutton">
                             <button type="button" onClick={toggleContactModal}>
                                 Close
-                                <IoCloseCircle className='newicons' />
+                                
                             </button>
                         </div>
                     </div>
@@ -253,16 +331,56 @@ const Navbar = () => {
                 <div className="modal-overlay" onClick={toggleEditModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <h2>Edit Folder</h2>
-                        
+                        <div className="table-container">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {folders.length > 0 ? (
+                                    folders.map(folder => (
+                                    <tr key={folder.id}>
+                                        <td>{folder.name}</td>
+                                        <td>
+                                            <button className='select-button' onClick={() => selectFolderToEdit(folder)}>
+                                                Select
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                    <td colSpan="2">No folders available</td>
+                                    </tr>
+                                )}
+                                </tbody>
+                            </table>
+                        </div>
+                        {folderToEdit && (
+                            <div className="confirmation-container">
+                                <p>Are you sure you want to edit this folder?</p>
+                                <div className="button-container">
+                                    <button type="button" onClick={() => { setIsEditing(false); setFolderToEdit(null); }}>
+                                        No
+                                    </button>
+                                    <button type="button" onClick={() => {  }}>
+                                        Yes
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                         <div className="closebutton">
                             <button type="button" onClick={toggleEditModal}>
                                 Close
-                                <IoCloseCircle className='newicons' />
+                            
                             </button>
                         </div>
                     </div>
                 </div>
-            )}  
+            )}
 
             {showLogoutModal && (
                 <div className="modal-overlay" onClick={toggleLogoutModal}>

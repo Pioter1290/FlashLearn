@@ -133,6 +133,10 @@
   .select-button:hover{
     background-color: #357bb8;
   }
+  .select-button:focus {
+    background-color: #e74c3c; 
+     
+  }
   
   .open-modal-btn {
     position: absolute;
@@ -207,7 +211,9 @@ th, td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: left;
-  max-height: 50px;
+  word-wrap: break-word;  
+  white-space: normal;  
+  max-width: 100px;      
 }
 
 .table-container {

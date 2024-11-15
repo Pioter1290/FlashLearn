@@ -2,11 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './FlashCards.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'; 
-import { FiEdit } from "react-icons/fi";
-import { MdDeleteOutline } from "react-icons/md";
-import { MdAdd } from "react-icons/md";
-import { IoExitOutline } from "react-icons/io5";
-import { FaMagnifyingGlass } from "react-icons/fa6";
 
 const FlashCards = () => {
   const [showModal, setShowModal] = useState(true);
@@ -19,22 +14,32 @@ const FlashCards = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const folderId = localStorage.getItem('folder-id');
-    if (folderId) {
-      setNewFlashcard((prevFlashcard) => ({
-        ...prevFlashcard,
-        folder_id: Number(folderId),
-      }));
+    const fetchData = async () => {
+      try {
+        const folderId = localStorage.getItem('folder-id');
+        if (folderId) {
+          setNewFlashcard(prevFlashcard => ({
+            ...prevFlashcard,
+            folder_id: Number(folderId),
+          }));
 
-      axios.get(`http://localhost:8081/flashcards?folder_id=${folderId}`)
-        .then(response => {
+          const response = await axios.get(`http://localhost:8081/flashcards?folder_id=${folderId}`);
           console.log("Flashcards:", response.data);
-          setFlashcards(response.data); 
-        })
-        .catch(error => {
-          console.error("Error fetching flashcards:", error);
-        });
-    }
+
+          const formattedFlashcards = response.data.map(flashcard => ({
+            id: flashcard.flashcard_id,
+            question: flashcard.flashcard_question,
+            answer: flashcard.flashcard_answer
+          }));
+
+          setFlashcards(formattedFlashcards); 
+        }
+      } catch (error) {
+        console.error("Error fetching flashcards:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleExit = () => {
@@ -47,7 +52,7 @@ const FlashCards = () => {
 
   const handleConfirmExit = () => {
     setShowExitModal(false);
-    setShowModal(false); // Hide the modal
+    setShowModal(false); 
     navigate("/page");
   };
 
@@ -132,7 +137,6 @@ const FlashCards = () => {
       {showModal && (
         <div className="tab">
           <div className="modal">
-            
             {isDeleting ? (
               <div>
                 <h2 className='colors'>Delete Flashcard</h2>
@@ -147,22 +151,26 @@ const FlashCards = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {flashcards.map(flashcard => (
-                        <tr key={flashcard.id}>
-                          <td>{flashcard.question}</td>
-                          <td>{flashcard.answer}</td>
-                          <td><button className='select-button' onClick={() => selectFlashcardToDelete(flashcard)}>Select</button></td>
+                      {flashcards.length > 0 ? (
+                        flashcards.map(flashcard => (
+                          <tr key={flashcard.id}>
+                            <td>{flashcard.question}</td>
+                            <td>{flashcard.answer}</td>
+                            <td><button className='select-button' onClick={() => selectFlashcardToDelete(flashcard)}>Select</button></td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="3">No flashcards available</td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
-                  
                 </div>
                 {flashcardToDelete && (
                   <div>
                     <p>Are you sure you want to delete the flashcard: {flashcardToDelete.question}?</p>
-                    <button onClick={handleDeleteConfirmed}>Delete</button>
-                    
+                    <button className="learn-button" onClick={handleDeleteConfirmed}>Delete</button>
                   </div>
                 )}
                 <button className="cancel-button" onClick={handleCancelDelete}>Cancel</button>
@@ -173,8 +181,7 @@ const FlashCards = () => {
                   <h2>Manage Flashcards</h2>
                   <button className="modal-button" onClick={handleAddFlashcard}>Add Flashcard</button>
                   <button className="modal-button" onClick={handleDeleteFlashcard}>Delete Flashcard</button>
-                  <button className="modal-button">Edit Flashcard </button>
-                  
+                  <button className="modal-button">Edit Flashcard</button>
                   <button className="learn-button">Learn</button>
                   <button className="close-btn" onClick={handleExit}>Exit</button>
                 </div>

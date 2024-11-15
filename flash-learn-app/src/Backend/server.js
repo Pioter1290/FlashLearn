@@ -171,3 +171,51 @@ app.get('/flashcards', (req, res) => {
     res.json(data); 
   });
 });
+
+
+app.delete('/delete-folder/:id', (req, res) => {
+  const folderID = req.params.id;
+
+  console.log("Received delete-folder request:", folderID);
+
+  if (!folderID) {
+    return res.status(400).json({ error: "Folder ID is required" });
+  }
+  db.beginTransaction((err) => {
+    if (err) {
+      console.error("Error starting transaction:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    const deleteFlashcardsSql = "DELETE FROM flashcards WHERE folder_id = ?";
+    db.query(deleteFlashcardsSql, [folderID], (err, result) => {
+      if (err) {
+        return db.rollback(() => {
+          console.error("Error deleting flashcards:", err);
+          res.status(500).json({ error: "Error deleting flashcards" });
+        });
+      }
+
+      const deleteFolderSql = "DELETE FROM app_folders WHERE folder_id = ?";
+      db.query(deleteFolderSql, [folderID], (err, result) => {
+        if (err) {
+          return db.rollback(() => {
+            console.error("Error deleting folder:", err);
+            res.status(500).json({ error: "Error deleting folder" });
+          });
+        }
+
+        db.commit((err) => {
+          if (err) {
+            return db.rollback(() => {
+              console.error("Error committing transaction:", err);
+              res.status(500).json({ error: "Error committing transaction" });
+            });
+          }
+
+          res.status(200).json({ message: "Folder and related flashcards deleted successfully" });
+        });
+      });
+    });
+  });
+});
