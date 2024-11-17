@@ -9,6 +9,7 @@ const FlashCards = () => {
   const [newFlashcard, setNewFlashcard] = useState({ question: '', answer: '', folder_id: '' });
   const [isAdding, setIsAdding] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false); 
+  const [isLearning, setIsLearning] = useState(false); 
   const [flashcardToDelete, setFlashcardToDelete] = useState(null);
   const [showExitModal, setShowExitModal] = useState(false);
   const navigate = useNavigate();
@@ -64,6 +65,10 @@ const FlashCards = () => {
     setIsDeleting(true);
   };
 
+  const handleLearnFlashcard = () => {
+    setIsLearning(true);
+  }
+
   const handleSaveFlashcard = async () => {
     try {
       const response = await fetch('http://localhost:8081/add-flashcard', {
@@ -104,6 +109,10 @@ const FlashCards = () => {
     setFlashcardToDelete(null);
   };
 
+  const handleCloseLearnModal = () => {
+    setIsLearning(false);
+  }
+
   const handleDeleteConfirmed = async () => {
     if (flashcardToDelete) {
       try {
@@ -134,7 +143,7 @@ const FlashCards = () => {
         <h1>FlashLearn</h1>
       </div>
 
-      {showModal && (
+      {showModal && !isLearning && (
         <div className="tab">
           <div className="modal">
             {isDeleting ? (
@@ -182,9 +191,10 @@ const FlashCards = () => {
                   <button className="modal-button" onClick={handleAddFlashcard}>Add Flashcard</button>
                   <button className="modal-button" onClick={handleDeleteFlashcard}>Delete Flashcard</button>
                   <button className="modal-button">Edit Flashcard</button>
-                  <button className="learn-button">Learn</button>
+                  <button className="learn-button" onClick={handleLearnFlashcard}>Learn</button>
                   <button className="close-btn" onClick={handleExit}>Exit</button>
                 </div>
+                
               )
             )}
             {isAdding && (
@@ -208,6 +218,17 @@ const FlashCards = () => {
                 <button className="cancel-button" onClick={handleCloseAddModal}>Cancel</button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {isLearning && (
+        <div className="learn-modal">
+          <div className="modal">
+            <div className="learn-form">
+              <h2>Learn Flashcards</h2>
+              <button className="cancel-button" onClick={handleCloseLearnModal}>Cancel</button>
+            </div>
           </div>
         </div>
       )}

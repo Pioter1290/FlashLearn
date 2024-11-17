@@ -3,7 +3,7 @@
 }
 .top {
     width: 100%;
-    background-color: rgba(47, 119, 201, 0.942);
+    background-color: rgba(45, 128, 223, 0.942);
     border: 2px solid rgba(255, 255, 255, .2);
     box-shadow: 0 0 50px rgba(0, 0, 0, .4);
     color: #fff;
@@ -29,14 +29,15 @@
   }
   
   .modal {
-    background: rgba(96, 167, 249, 0.942); 
+    background: rgba(45, 128, 223, 0.942);
     border: 2px solid rgba(255, 255, 255, .2);
     backdrop-filter: blur(50px);
     padding: 20px;
     border-radius: 8px;
     text-align: center;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
-    width: 500px;
+    width: 700px;
+    margin-top: 100px !important;
   }
   
   .modal-buttons {
@@ -227,6 +228,10 @@ th, td {
   color: #fffcfc;
 }
 
-
-
-
+.learn-form {
+  margin: 20px 0;
+}
+.learn-form h2{
+  color: white;
+  margin: 20px;
+}
