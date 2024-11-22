@@ -1,207 +1,216 @@
 * {
   box-sizing: border-box;
 }
+
 .top {
-    width: 100%;
-    background-color: rgba(45, 128, 223, 0.942);
-    border: 2px solid rgba(255, 255, 255, .2);
-    box-shadow: 0 0 50px rgba(0, 0, 0, .4);
-    color: #fff;
-    padding: 5px 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    text-align: center;
-  }
-  
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-  }
-  
-  .modal {
-    background: rgba(45, 128, 223, 0.942);
-    border: 2px solid rgba(255, 255, 255, .2);
-    backdrop-filter: blur(50px);
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
-    width: 700px;
-    margin-top: 100px !important;
-  }
-  
-  .modal-buttons {
-    
-    margin: 20px 0;
-  }
+  width: 100%;
+  background-color: rgba(45, 128, 223, 0.942);
+  border: 2px solid rgba(255, 255, 255, .2);
+  box-shadow: 0 0 50px rgba(0, 0, 0, .4);
+  color: #fff;
+  padding: 5px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  text-align: center;
+}
 
-  .modal-buttons h2{
-    color: #ffffff;
-    margin-bottom: 10px;
-  }
-  
-  .modal-button {
-    
-    background-color: #ffffff;
-    color: rgb(0, 0, 0);
-    border: 1px solid rgb(200, 200, 200);
-    padding: 10px;
-    margin: 5px;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    vertical-align: middle;
-  }
-  
-  
-  .modal-button:hover {
-    background-color: #cfcfcf;
-  }
-  
-  .close-btn {
-    margin-top: 20px;
-    background-color: #e74c3c;
-    color: white;
-    border: 1px solid #ffffff;
-    padding: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-  }
-  
-  .close-btn:hover {
-    background-color: #c0392b;
-  }
+.top h1{
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6),
+               2px 2px 3px rgba(0, 0, 0, 0.6),
+               3px 3px 5px rgba(0, 0, 0, 0.1);
+  transform: translateZ(40px);
+  transition: transform 0.3s ease-in-out;
+}
 
-  .learn-button {
-    background-color: #1dc81a;
-    color: white;
-    border: 1px solid #1cae1a;
-    padding: 10px;
-    margin: 5px;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    vertical-align: middle;
-  }
+.top h1:hover {
+  transform: translateZ(50px);
+}
 
-  .learn-button:hover {
-    background-color: #1cae1a;
-  }
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
 
-  .cancel-button {
-    background-color: #d51919;
-    color: white;
-    border: 1px solid rgb(255, 255, 255); 
-    padding: 10px;
-    margin: 5px;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    vertical-align: middle;
-  }
+.modal {
+  background: rgba(45, 128, 223, 0.942);
+  border: 2px solid rgba(255, 255, 255, .2);
+  backdrop-filter: blur(50px);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+  width: 700px;
+  margin-top: 100px !important;
+}
 
-  .cancel-button:hover {
-    background-color: #ae1a1a;
-  }
+.modal-buttons {
+  margin: 20px 0;
+}
 
-  .select-button {
-    background-color: #3a82d0;
-    color: white;
-    border: none;
-   
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    
-  }
+.modal-buttons h2 {
+  color: #ffffff;
+  margin-bottom: 10px;
+}
 
-  .select-button:hover{
-    background-color: #357bb8;
-  }
-  .select-button:focus {
-    background-color: #e74c3c; 
-     
-  }
-  
-  .open-modal-btn {
-    position: absolute;
-    top: 100px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #3498db;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .open-modal-btn:hover {
-    background-color: #2980b9;
-  }
-  .add-flashcard-form {
-    margin: 20px 0;
-  }
-  .add-flashcard-form h2{
-    color: white;
-    margin: 20px;
-  }
-  
-  .add-flashcard-form input  {
-    display: block;
-    width: calc(100%);
-    height: 60px;
-    margin: 10px auto;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    resize: vertical;
-    word-wrap: break-word;
-    word-wrap: break-word; 
-  white-space: normal; 
-  overflow-wrap: break-word; 
-  }
-  .add-flashcard-form textarea {
-    display: block;
-    width: 100%;
-    height: auto;
-    min-height: 60px; 
-    margin: 10px auto;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    resize: none; 
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    color: #333;
-    overflow-y: hidden; 
-  }
-  
-  .add-flashcard-form textarea::placeholder {
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    color: #999;
-    opacity: 1;
-  }
-  
-  
+.modal-button {
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  border: 1px solid rgb(200, 200, 200);
+  padding: 10px;
+  margin: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.modal-button:hover {
+  background-color: #cfcfcf;
+}
+
+.close-btn {
+  margin-top: 20px;
+  background-color: #e74c3c;
+  color: white;
+  border: 1px solid #ffffff;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+}
+
+.close-btn:hover {
+  background-color: #c0392b;
+}
+
+.learn-button {
+  background-color: #1dc81a;
+  color: white;
+  border: 1px solid #1cae1a;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.learn-button:hover {
+  background-color: #1cae1a;
+}
+
+.cancel-button {
+  background-color: #d51919;
+  color: white;
+  border: 1px solid rgb(255, 255, 255);
+  padding: 10px;
+  margin: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.cancel-button:hover {
+  background-color: #ae1a1a;
+}
+
+.select-button {
+  background-color: #3a82d0;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+}
+
+.select-button:hover {
+  background-color: #357bb8;
+}
+
+.select-button:focus {
+  background-color: #e74c3c;
+}
+
+.open-modal-btn {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #3498db;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.open-modal-btn:hover {
+  background-color: #2980b9;
+}
+
+.add-flashcard-form {
+  margin: 20px 0;
+}
+
+.add-flashcard-form h2 {
+  color: white;
+  margin: 20px;
+}
+
+.add-flashcard-form input {
+  display: block;
+  width: calc(100%);
+  height: 60px;
+  margin: 10px auto;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.add-flashcard-form textarea {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 60px;
+  margin: 10px auto;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: none;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  overflow-y: hidden;
+}
+
+.add-flashcard-form textarea::placeholder {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  color: #999;
+  opacity: 1;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -212,26 +221,116 @@ th, td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: left;
-  word-wrap: break-word;  
-  white-space: normal;  
-  max-width: 100px;      
+  word-wrap: break-word;
+  white-space: normal;
+  max-width: 100px;
 }
 
 .table-container {
-  max-height: 300px; 
+  max-height: 300px;
   overflow-y: auto;
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
-.colors{
+.colors {
   color: #fffcfc;
 }
 
 .learn-form {
-  margin: 20px 0;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;     
+  justify-content: center; 
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6),
+               2px 2px 3px rgba(0, 0, 0, 0.6),
+               3px 3px 5px rgba(0, 0, 0, 0.1);
+  transform: translateZ(40px);
+  transition: transform 0.3s ease-in-out;
 }
-.learn-form h2{
+
+.learn-form h2 {
   color: white;
-  margin: 20px;
+  margin-bottom: 90px;
 }
+
+.learn-form h1:hover {
+  transform: translateZ(50px);
+}
+
+.question-container {
+  width: 300px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  backface-visibility: hidden;
+}
+.flashcard-container * {
+  text-shadow: none;
+}
+
+.flashcard-container {
+  perspective: 1000px;
+  display: flex;            
+  justify-content: center;   
+  align-items: center;      
+  margin-top: 20px;    
+  font-size: 20px;
+     
+}
+.flashcard {
+  
+  width: 670px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.flashcard-container.flipped .flashcard {
+  transform: rotateX(180deg);
+}
+
+.flashcard .front,
+.flashcard .back {
+  position: absolute;
+  background-color: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flashcard .back {
+  transform: rotateX(180deg);
+}
+
+.prevAndNext-btns{
+  margin-top: 120px;
+  margin-bottom: 20px;
+}.button-container {
+  display: flex;
+  justify-content: space-between; 
+  width: 100%; 
+}
+

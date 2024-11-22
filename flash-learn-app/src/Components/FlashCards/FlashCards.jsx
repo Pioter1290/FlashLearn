@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import './FlashCards.css';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; 
+import axios from 'axios';
 
 const FlashCards = () => {
+
   const [showModal, setShowModal] = useState(true);
   const [flashcards, setFlashcards] = useState([]);
   const [newFlashcard, setNewFlashcard] = useState({ question: '', answer: '', folder_id: '' });
   const [isAdding, setIsAdding] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false); 
-  const [isLearning, setIsLearning] = useState(false); 
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isLearning, setIsLearning] = useState(false);
   const [flashcardToDelete, setFlashcardToDelete] = useState(null);
   const [showExitModal, setShowExitModal] = useState(false);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0); 
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,10 +34,10 @@ const FlashCards = () => {
           const formattedFlashcards = response.data.map(flashcard => ({
             id: flashcard.flashcard_id,
             question: flashcard.flashcard_question,
-            answer: flashcard.flashcard_answer
+            answer: flashcard.flashcard_answer,
           }));
 
-          setFlashcards(formattedFlashcards); 
+          setFlashcards(formattedFlashcards);
         }
       } catch (error) {
         console.error("Error fetching flashcards:", error);
@@ -53,21 +57,22 @@ const FlashCards = () => {
 
   const handleConfirmExit = () => {
     setShowExitModal(false);
-    setShowModal(false); 
+    setShowModal(false);
     navigate("/page");
   };
 
   const handleAddFlashcard = () => {
     setIsAdding(true);
   };
-  
+
   const handleDeleteFlashcard = () => {
     setIsDeleting(true);
   };
 
   const handleLearnFlashcard = () => {
     setIsLearning(true);
-  }
+    setCurrentCardIndex(0); 
+  };
 
   const handleSaveFlashcard = async () => {
     try {
@@ -111,7 +116,10 @@ const FlashCards = () => {
 
   const handleCloseLearnModal = () => {
     setIsLearning(false);
-  }
+    setCurrentCardIndex(0); 
+    setShowAnswer(false);
+    setIsFlipped(false); 
+  };
 
   const handleDeleteConfirmed = async () => {
     if (flashcardToDelete) {
@@ -135,6 +143,31 @@ const FlashCards = () => {
 
   const selectFlashcardToDelete = (flashcard) => {
     setFlashcardToDelete(flashcard);
+  };
+
+  const handleNextCard = () => {
+    if (currentCardIndex < flashcards.length - 1) {
+      setCurrentCardIndex(currentCardIndex + 1);
+      setShowAnswer(false);
+      setIsFlipped(false); 
+    } else {
+      alert("You've completed all flashcards!");
+    }
+  };
+  
+  const handlePreviousCard = () => {
+    if (currentCardIndex > 0) {
+      setCurrentCardIndex(currentCardIndex - 1);
+      setShowAnswer(false);
+      setIsFlipped(false); 
+    } else {
+      alert("It's the first flashcard!");
+    }
+  };
+
+  const handleShowAnswer = () => {
+    setShowAnswer(true);
+    setIsFlipped(!isFlipped); 
   };
 
   return (
@@ -194,7 +227,6 @@ const FlashCards = () => {
                   <button className="learn-button" onClick={handleLearnFlashcard}>Learn</button>
                   <button className="close-btn" onClick={handleExit}>Exit</button>
                 </div>
-                
               )
             )}
             {isAdding && (
@@ -222,12 +254,29 @@ const FlashCards = () => {
         </div>
       )}
 
-      {isLearning && (
+      {isLearning && flashcards.length > 0 && (
         <div className="learn-modal">
           <div className="modal">
             <div className="learn-form">
-              <h2>Learn Flashcards</h2>
-              <button className="cancel-button" onClick={handleCloseLearnModal}>Cancel</button>
+                <h2>Learn Flashcards</h2>
+                <div className={`flashcard-container ${isFlipped ? 'flipped' : ''}`}>
+                  <div className="flashcard">
+                    <div className="front">
+                      <p>{flashcards[currentCardIndex].question}</p>
+                    </div>
+                    <div className="back">
+                      <p> {flashcards[currentCardIndex].answer}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="button-container">
+                  <button className="prevAndNext-btns" onClick={handlePreviousCard}>Previous</button>
+                  <button className="prevAndNext-btns" onClick={handleNextCard}>Next</button>
+                </div>
+                <button className="learn-button" onClick={handleShowAnswer}>
+                  {isFlipped ? 'Show Question' : 'Show Answer'}
+                </button>
+                <button className="cancel-button" onClick={handleCloseLearnModal}>Cancel</button>
             </div>
           </div>
         </div>
