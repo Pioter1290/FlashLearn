@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './LoginForm.css';
 import { FaRegUserCircle } from "react-icons/fa";
 import { RiLockPasswordLine } from "react-icons/ri";
@@ -15,47 +15,69 @@ const LoginForm = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const remember = localStorage.getItem('rememberMe') === 'true';
+    if (remember) {
+      setValues({
+        email: localStorage.getItem('email') || '',
+        password: localStorage.getItem('password') || ''
+      });
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleInput = (event) => {
-    setValues(prev => ({ ...prev, [event.target.name]: event.target.value }))
-
+    setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
   }
+
+  const handleRememberMe = (event) => {
+    setRememberMe(event.target.checked);
+  };
 
   const handleLogin = (event) => {
     event.preventDefault();
     setErrors(Validation(values));
     if (errors.email === "" && errors.password === "") {
-        axios.post('http://localhost:8081/login', values)
-            .then(async (res) => {
-                if (res.data.message === "Success") {
-                    localStorage.setItem('userId', res.data.userId);
-                    const folders = await fetchFolders(res.data.userId); 
-                    navigate('/page');
-                } else {
-                    alert(res.data.message);
-                }
-            })
-            .catch(err => console.log(err));
+      axios.post('http://localhost:8081/login', values)
+        .then(async (res) => {
+          if (res.data.message === "Success") {
+            localStorage.setItem('userId', res.data.userId);
+            if (rememberMe) {
+              localStorage.setItem('rememberMe', true);
+              localStorage.setItem('email', values.email);
+              localStorage.setItem('password', values.password);
+            } else {
+              localStorage.removeItem('rememberMe');
+              localStorage.removeItem('email');
+              localStorage.removeItem('password');
+            }
+            const folders = await fetchFolders(res.data.userId); 
+            navigate('/page');
+          } else {
+            alert(res.data.message);
+          }
+        })
+        .catch(err => console.log(err));
     }
-};
+  };
 
-
-const fetchFolders = async (userId) => {
-  try {
+  const fetchFolders = async (userId) => {
+    try {
       const res = await axios.get('http://localhost:8081/folders', {
-          headers: { 'userId': userId }
+        headers: { 'userId': userId }
       });
 
       if (res.status === 200) {
-          localStorage.setItem('folders', JSON.stringify(res.data));  
-          return res.data;
+        localStorage.setItem('folders', JSON.stringify(res.data));  
+        return res.data;
       }
-  } catch (err) {
+    } catch (err) {
       console.log("Error fetching folders:", err);
       return []; 
-  }
-};
-
+    }
+  };
 
   return (
     <div className="wrapper">
@@ -86,7 +108,13 @@ const fetchFolders = async (userId) => {
         </div>
         {errors.password && <p className="error">{errors.password}</p>}
         <div className="remember-forgot">
-          <label><input type="checkbox" />Remember me</label>
+          <label>
+            <input 
+              type="checkbox" 
+              checked={rememberMe} 
+              onChange={handleRememberMe} 
+            />Remember me
+          </label>
           <p> <Link to="/forgot-password">Forgot Password?</Link></p>
         </div>
         <button type="submit">Login</button>

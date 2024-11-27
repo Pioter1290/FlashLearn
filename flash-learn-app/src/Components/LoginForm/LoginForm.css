@@ -4,7 +4,7 @@
     background: transparent;
     border: 2px solid rgba(255, 255, 255, .2);
     backdrop-filter: blur(9px);
-    box-shadow: 0 0 50px rgba(112, 112, 112, 0.486) !important;
+    box-shadow: 0 0 50px rgba(70, 70, 70, 0.486) !important;
     color: #fff;
     border-radius: 15px;
     padding: 30px 40px;
